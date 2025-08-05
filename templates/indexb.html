@@ -1,0 +1,64 @@
+{% include "header.html" %}
+
+<!-- Page Header-->
+<header class="masthead"
+  style="background-image: url('{{ url_for('blog.static', filename='assets/img/home-bg.jpg') }}')">
+  <div class="container position-relative px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+      <div class="col-md-10 col-lg-8 col-xl-7"> 
+        <div class="site-heading">
+          <h1>HJ's Blog.</h1> 
+          <span class="subheading">This is a place to discuss about AI Contact Center or CX Cloud</span>
+        </div>
+        <!-- <div class="heading"><div class="heading__line-1">Hello, I'm <span>HJ</span>.</div><div class="heading__line-2">I'm a full stack web developer.</div><a href="#about" class="heading__link"><div class="heading-cta">View my work <svg class="heading__arrow" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>arrow-right</title><path d="M11.293 5.707l5.293 5.293h-11.586c-0.552 0-1 0.448-1 1s0.448 1 1 1h11.586l-5.293 5.293c-0.391 0.391-0.391 1.024 0 1.414s1.024 0.391 1.414 0l7-7c0.092-0.092 0.166-0.202 0.217-0.324 0.101-0.245 0.101-0.521 0-0.766-0.049-0.118-0.121-0.228-0.217-0.324l-7-7c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414z"></path></svg></div></a></div> -->
+      </div>
+    </div>
+  </div>
+</header>
+<!-- Main Content-->
+<div class="container px-4 px-lg-5">
+  <div class="row gx-4 gx-lg-5 justify-content-center">
+    <div class="col-md-10 col-lg-8 col-xl-7">
+      <!-- Post preview-->
+      {% for post in all_posts %}
+      <div class="post-preview">
+        <a href="{{ url_for('blog.show_post', post_id=post.id) }}">
+          <h2 class="post-title">{{ post.title }}</h2>
+          <h3 class="post-subtitle">{{ post.subtitle }}</h3>
+        </a>
+        <p class="post-meta">
+          Posted by
+          <!-- post.author.name is now a User object -->
+          <a href="#">{{post.author.name}}</a>
+          on {{post.date}}
+          <!-- Only show delete button if user has the 'executive' role -->
+          {% if current_user.is_authenticated and current_user.category == 'executive': %}
+          <a href="{{url_for('blog.delete_post', post_id=post.id) }}">✘</a>
+          {% endif %}
+        </p>
+      </div>
+      <!-- Divider-->
+      <hr class="my-4" />
+      {% endfor %}
+
+      <!-- New Post -->
+      <!-- Show Create Post button if user has 'executive' or 'director' role -->
+      {% if current_user.is_authenticated and current_user.category in ['executive', 'director']: %}
+      <div class="d-flex justify-content-end mb-4">
+        <a
+          class="btn btn-primary float-right"
+          href="{{url_for('blog.add_new_post')}}"
+          >Create New Post</a
+        >
+      </div>
+      {% endif %}
+
+      <!-- Pager-->
+      <div class="d-flex justify-content-end mb-4">
+        <a class="btn btn-secondary text-uppercase" href="#!">Older Posts →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include "footer.html" %}
