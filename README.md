@@ -20,7 +20,7 @@ blog_bp = Blueprint('blog', __name__,
 *   **Integration**: In `app.py`, the blueprint is registered with the main Flask application using a `url_prefix='/blog_project'`. 
 from blog_project.main import blog_bp
 app.register_blueprint(blog_bp, url_prefix='/blog_project')
-This means all routes defined within the blueprint (e.g., `/login`, `/post/1`) are accessible under the prefixed path (e.g., `https://one-main.onrender.com/blog_project/login`).
+This means all routes defined within the blueprint (e.g., `/login`, `/post/1`) are accessible under the prefixed path (e.g., `https://hjlees.com/blog_project/login`).
 
 #### b. Application Factory Pattern (`create_app`)
 The main application in `app.py` utilizes the factory pattern. This is a crucial architectural choice that:
