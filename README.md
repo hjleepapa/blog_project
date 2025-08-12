@@ -29,13 +29,40 @@ The main application in `app.py` utilizes the factory pattern. This is a crucial
 *   Ensures a predictable and controlled initialization sequence: extensions are initialized first, then blueprints are imported and registered.
 
 #### c. Centralized Extension Management (`extensions.py`)
-The project uses `/Users/hj/Web Development Projects/1. Main/extensions.py` to instantiate all Flask extension objects (`db`, `login_manager`, `ckeditor`, etc.). These un-configured instances are then imported and initialized within the `create_app` factory. This pattern elegantly solves the problem of circular imports that often arises when models, views, and the app factory all need to access the same extension instance.
+The project uses `extensions.py` to instantiate all Flask extension objects (`db`, `login_manager`, `ckeditor`, `bootstrap`, `migrate`, etc.). This centralized approach serves as the single source of truth for all Flask extensions used throughout the application.
+
+**Key Benefits:**
+- **Circular Import Prevention**: By instantiating extensions in a separate module, we avoid circular dependencies that commonly occur when models, views, and the app factory all need access to the same extension instances.
+- **Consistent Extension Access**: All modules import from the same location, ensuring consistency across the application.
+- **Simplified Testing**: The factory pattern allows for easy creation of test instances with different configurations.
+
+**Integration with app.py:**
+The `create_app()` factory function in `app.py` imports these un-configured extension instances and initializes them with the Flask application context:
+
+```python
+from extensions import db, login_manager, ckeditor, bootstrap, migrate
+
+def create_app():
+    app = Flask(__name__)
+    
+    # Initialize extensions with the app
+    db.init_app(app)
+    ckeditor.init_app(app)
+    bootstrap.init_app(app)
+    migrate.init_app(app, db)
+    
+    # Configure login manager
+    login_manager.init_app(app)
+    login_manager.login_view = 'blog.login'
+```
+
+This pattern ensures that extensions are properly configured with the application context before any blueprints or routes are registered, maintaining a clean separation between extension instantiation and configuration.
 
 ### 3. Database and Data Layer
 
 #### a. ORM and Models
 *   **Technology**: The project uses **Flask-SQLAlchemy** as its Object-Relational Mapper (ORM) to interact with the database.
-*   **Model Definitions**: The database schema is defined in `/Users/hj/Web Development Projects/1. Main/blog_project/models.py` using modern, type-annotated `Mapped` syntax. The core models are:
+*   **Model Definitions**: The database schema is defined in `blog_project/models.py` using modern, type-annotated `Mapped` syntax. The core models are:
     *   `User`: Stores user credentials (`email`, hashed `password`, hashed `pin`), personal details (`name`, `badge`, `company`), and a `category` for role-based access control.
     *   `BlogPost`: Represents a blog article with a `title`, `subtitle`, `body`, `date`, and `img_url`.
     *   `Comment`: Represents a user's comment on a post.
